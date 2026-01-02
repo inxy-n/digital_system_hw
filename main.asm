@@ -12,6 +12,8 @@ DEF KEY_LEFT   EQU 5
 DEF KEY_UP     EQU 6
 DEF KEY_DOWN   EQU 7
 
+
+
 SECTION "Header", ROM0[$100]
   jp EntryPoint
 
@@ -21,6 +23,7 @@ EntryPoint:
   call WaitVBlank
   ld a, 0
   ld [rLCDC], a
+
 
   ld a,%11111100 ; black and white palette
   ld [rOBP0], a
@@ -48,15 +51,16 @@ EntryPoint:
   call   ResetBG
   ld a, LCDC_ON | LCDC_OBJ_ON | LCDC_BG_ON | LCDC_BLOCK01
   ld [rLCDC], a
-  ld a,3
+  ld a,4
   ld [BaseX],a
-  ld a,3
+  ld a,4
   ld [BaseY],a
   ld a,0
   ld [FUCK],a
   
 MainLoop:
   call readKeys
+  call HandleInput
   call Pause
   call Scroll
   call UpdateObjects
@@ -67,19 +71,89 @@ MainLoop:
 
 
 SECTION "Functions", ROM0
-Pause:
+; Handle the rotation and the move
+HandleInput:
+  ; Check the status of paused
+  ld a, [paused]
+  cp 1
+  ret z ; If the status is paused, do nothing
+  
+  ; Get the status of key
+  ld a, [current]
+  
+  ; Check the rotation
+  bit 0, a
+  jr z, .checkLeft
+  call Rotate
+  ret
+  
+.checkLeft:
+  bit KEY_LEFT, a
+  jr z, .checkRight
+  
+  ; move left
+  ld a, [BaseX]
+  dec a
+  cp 4 ;The smallest X coord
+  jr nc, .storeLeft
+  ld a, 4
+.storeLeft:
+  ld [BaseX], a
+  
+.checkRight:
+  bit KEY_RIGHT, a
+  jr z, .checkDown
+  
+  ; move right
+  ld a, [BaseX]
+  inc a
+  cp 13 ; The biggest X coord
+  jr c, .storeRight
+  ld a, 13
+.storeRight:
+  ld [BaseX], a
+  
+.checkDown:
+  bit KEY_DOWN, a
+  jr z, .done
+  
+  ; move down
+  ld a, [BaseY]
+  inc a
+  cp 20 ; The biggest Y coord
+  jr c, .storeDown
+  ld a, 20
+.storeDown:
+  ld [BaseY], a
+  
+.done:
+  ret
+  
+Rotate:
+  ld a, [FUCK]
+  add a, 8 ;since each status of rotation has length 8 
+  cp 32 ; upper bound
+  jr c, .store
+  ld a, 0
+.store:
+  ld [FUCK], a
+  
+  ret
 
-  bit 0,c
-  ret z
-  ld a,[FUCK]
-  add a,8
-  ld [FUCK],a
-  ret 
+Pause:
   bit 1,c
   ret z
+  
+  ; change the status of paused
   ld a,[paused]
   xor %00000001
   ld [paused],a
+  
+  ; clear the Key status
+  ld a, 0
+  ld [previous], a
+  ld [current], a
+  
   ret
   
 Scroll:
@@ -133,7 +207,7 @@ UpdateObjects:
   ld a,[FUCK]
   ld b,0
   ld c,a
-  ld hl,Tetromino_I
+  ld hl,Tetromino_L
 
   add hl,bc
   ld d,h
@@ -288,21 +362,35 @@ readKeys:
 
 SECTION "Data", ROM0
 
-
+PieceAddressTable:
+    dw Tetromino_I
+    dw Tetromino_J
+    dw Tetromino_L
+    dw Tetromino_O
+    dw Tetromino_S
+    dw Tetromino_Z
+    dw Tetromino_T
 
 Tiles:
 ; smiling face
  DB %01111110
  DB %10000001
- DB %10100101
  DB %10000001
- DB %10100101
- DB %10011001
+ DB %10000001
+ DB %10000001
+ DB %10000001
  DB %10000001
  DB %01111110
 ; blank
-DB 0,0,0,0,0,0,0,0
-DB 0,0,0,0,0,0,0,0
+ DB %00000000
+ DB %00000000
+ DB %00000000
+ DB %00000000
+ DB %00000000
+ DB %00000000
+ DB %00000000
+ DB %00000000
+ 
  ; fog
  DB %10101010
  DB %01010101
@@ -312,16 +400,27 @@ DB 0,0,0,0,0,0,0,0
  DB %01010101
  DB %10101010
  DB %01010101
+ 
+ ; black
+ DB %11111111
+ DB %11111111
+ DB %11111111
+ DB %11111111
+ DB %11111111
+ DB %11111111
+ DB %11111111
+ DB %11111111
 TilesEnd:
+
 Tetromino_I:
 ; rotation 0: degree 0
 DB 1,0,0,0,-1,0,-2,0
 ; rotation 1: degree 90
 DB 0,-1,0,0,0,1,0,2
 ; rotation 2: degree 180
-DB -2,1,-1,1,0,1,1,1
+DB 2,0,1,0,0,0,-1,0
 ; rotation 3: degree 270
-DB -1,-1,-1,0,-1,1,-1,2
+DB 0,2,0,1,0,0,0,-1
 
 Tetromino_J:
 DB -1,-1,-1,0,0,0,1,0
@@ -358,6 +457,7 @@ DB 0,-1,0,0,0,1,-1,0
 DB -1,0,0,0,1,0,0,1
 DB 0,1,0,0,0,-1,1,0
 DB 1,0,0,0,-1,0,0,-1
+
 
 SECTION "Variables", WRAM0
 ShadowOAM: DS 160
