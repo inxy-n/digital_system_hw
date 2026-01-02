@@ -57,6 +57,12 @@ EntryPoint:
   ld [BaseY],a
   ld a,0
   ld [FUCK],a
+
+  ld a, 0
+  ld [frameCounter], a
+
+  ld a, 60
+  ld [dropTime], a
   
 MainLoop:
   call readKeys
@@ -67,10 +73,36 @@ MainLoop:
   call WaitVBlank
   ;call ModifyAndResetScrollValue
   call CopyShadowOAMtoOAM
+  call AutoDrop
   jp MainLoop
 
 
 SECTION "Functions", ROM0
+
+AutoDrop:
+  ld a, [frameCounter]
+  inc a
+  ld [frameCounter], a
+  
+  ld b, a
+  ld a, [dropTime]
+  cp b
+  ret nz
+  
+  ld a, 0
+  ld [frameCounter], a
+  
+  call MoveDown
+  ret
+  
+MoveDown:
+  ld a, [BaseY]
+  inc a
+  cp 20 ; The biggest Y coord
+  jr c, .storeDown
+  ld a, 20
+.storeDown:
+  ld [BaseY], a
 ; Handle the rotation and the move
 HandleInput:
   ; Check the status of paused
@@ -504,9 +536,11 @@ SECTION "Variables", WRAM0
 ShadowOAM: DS 160
 Map:DS 180
 BaseX: DS 1
-BaseY:DS 1
+BaseY: DS 1
 current: DS 1
 previous: DS 1
 paused: DS 1
-FUCK:DS 1
-BGChanged:DS 1
+FUCK: DS 1
+BGChanged: DS 1
+frameCounter: DS 1
+dropTime: DS 1
