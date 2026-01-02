@@ -120,9 +120,9 @@ HandleInput:
   ; move down
   ld a, [BaseY]
   inc a
-  cp 20 ; The biggest Y coord
+  cp 18 ; The biggest Y place 20-2(since our height of Tetromino is 2)
   jr c, .storeDown
-  ld a, 20
+  ld a, 18
 .storeDown:
   ld [BaseY], a
   
