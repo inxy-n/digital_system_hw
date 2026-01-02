@@ -57,6 +57,7 @@ EntryPoint:
   
 MainLoop:
   call readKeys
+  call HandleInput
   call Pause
   call Scroll
   call UpdateObjects
@@ -67,19 +68,89 @@ MainLoop:
 
 
 SECTION "Functions", ROM0
+; Handle the rotation and the move
+HandleInput:
+  ; Check the status of paused
+  ld a, [paused]
+  cp 1
+  ret z ; If the status is paused, do nothing
+  
+  ; Get the status of key
+  ld a, [current]
+  ld b, a
+  ld a, [previous]
+  
+  ; Check the rotation
+  bit 0, b
+  jr z, .checkLeft
+  call Rotate
+  
+.checkLeft:
+  bit KEY_LEFT, a
+  jr z, .checkRight
+  
+  ; move left
+  ld a, [BaseX]
+  dec a
+  cp 1 ;The smallest X coord
+  jr nc, .storeLeft
+  ld a, 1
+.storeLeft:
+  ld [BaseX], a
+  
+.checkRight:
+  bit KEY_RIGHT, a
+  jr z, .checkDown
+  
+  ; move right
+  ld a, [BaseX]
+  inc a
+  cp 18 ; The biggest X coord
+  jr nz, .storeRight
+  ld a, 18
+.storeRight:
+  ld [BaseX], a
+  
+.checkDown:
+  bit KEY_DOWN, a
+  jr z, .done
+  
+  ; move down
+  ld a, [BaseY]
+  inc a
+  cp 18 ; The biggest Y place 20-2(since our height of Tetromino is 2)
+  jr c, .storeDown
+  ld a, 18
+.storeDown:
+  ld [BaseY], a
+  
+.done:
+  ret
+  
+Rotate:
+  ld a, [FUCK]
+  add a, 8 ;since each status of rotation has length 8 
+  cp 32 ; upper bound
+  jr c, .store
+  ld a, 0
+.store:
+  ld [FUCK], a
+  
+  ret
 Pause:
-
-  bit 0,c
-  ret z
-  ld a,[FUCK]
-  add a,8
-  ld [FUCK],a
-  ret 
   bit 1,c
   ret z
+  
+  ; change the status of paused
   ld a,[paused]
   xor %00000001
   ld [paused],a
+  
+  ; clear the Key status
+  ld a, 0
+  ld [previous], a
+  ld [current], a
+  
   ret
   
 Scroll:
