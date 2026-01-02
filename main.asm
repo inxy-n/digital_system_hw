@@ -82,7 +82,7 @@ HandleInput:
   ld a, [current]
   
   ; Check the rotation
-  bit 0, a
+  bit KEY_UP, a
   jr z, .checkLeft
   call Rotate
   ret
@@ -163,7 +163,7 @@ ResetBG:
   ld hl,TILEMAP0
   ld bc,1024
 .loop:
-  ld [hl],2 ; fog
+  ld [hl],1 ; blank
   inc hl
   dec bc
   ld a,b
@@ -207,7 +207,7 @@ UpdateObjects:
   ld a,[FUCK]
   ld b,0
   ld c,a
-  ld hl,Tetromino_L
+  ld hl,Tetromino_Z
 
   add hl,bc
   ld d,h
@@ -305,6 +305,47 @@ ResetMap:
   dec b
   jr nz,.loop
   ret
+
+UpdateBackGround:
+ld a,[BGChanged]
+cp 0
+ret z
+  ld hl,TILEMAP0
+.loop
+.lp1
+  ld a,c
+  cp 0
+  jp z,.break1
+  ld a,l
+  add 32    ;column number
+  jp nc,.notcarray
+  inc h
+.notcarray:
+  ld l,a
+ 
+  dec c
+  jp .lp1
+.break1:
+
+.lp3
+  ld a,d
+  cp 0
+  jp z,.break2
+  inc hl
+  dec d
+  jp .lp3
+.break2
+  ld [hl],1 ; fog
+  
+  pop hl
+
+  inc hl
+  inc hl
+  inc hl
+  dec b
+  jr nz, .loop
+  ret
+
 
 CopyTilesToVRAM:
   ld de, Tiles
@@ -468,3 +509,4 @@ current: DS 1
 previous: DS 1
 paused: DS 1
 FUCK:DS 1
+BGChanged:DS 1
