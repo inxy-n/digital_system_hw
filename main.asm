@@ -2,7 +2,7 @@
 ; TETRIS 
 ; Author: Xiayuan YE       999025695    ye25258@gtiit.edu.cn
 ;         Zitong YANG      999028004    yang25573@gtiit.edu.cn
-;         Xiaoyuan WU      999026823
+;         Xiaoyuan WU      999020050    wu24321@gtiit.edu.cn
 ;Date:   2026-01-06
 ; =========================================================
 
@@ -13,25 +13,26 @@ DEF BG_WIDTH        EQU 32
 DEF BG_HEIGHT       EQU 32
 
 ;Constants
-DEF GAME_LEFT_PAD   EQU 2
-DEF GAME_WIDTH      EQU 10
-DEF WALL_WIDTH      EQU 1
-DEF SCORE_LEN       EQU 5
-DEF LINE_LEN        EQU 4
-DEF NEXT_LEN        EQU 4
-DEF UI_END_COL      EQU 20
-DEF GAME_VISIBLE_ROWS EQU 18
-DEF NEXT_BOX_COL_OFFSET EQU 1
-DEF NEXT_BOX_SIZE       EQU 4
-DEF NEXT_BOX_START_ROW EQU 13
-DEF NEXT_BOX_START_COL EQU 16
+DEF GAME_LEFT_PAD          EQU 2
+DEF GAME_WIDTH             EQU 10
+DEF WALL_WIDTH             EQU 1
+DEF SCORE_LEN              EQU 5
+DEF LEVEL_LEN              EQU 5
+DEF LINE_LEN               EQU 4
+DEF NEXT_LEN               EQU 4
+DEF UI_END_COL             EQU 20
+DEF GAME_VISIBLE_ROWS      EQU 18
+DEF NEXT_BOX_COL_OFFSET    EQU 1
+DEF NEXT_BOX_SIZE          EQU 4
+DEF NEXT_BOX_START_ROW     EQU 13
+DEF NEXT_BOX_START_COL     EQU 16
 DEF NEXT_BOX_SPACE_ADDRESS EQU TILEMAP0 + (NEXT_BOX_START_ROW-2) * 32 + NEXT_BOX_START_COL-1
-DEF NEXT_BOX_BASE_ADDRESS EQU TILEMAP0 + NEXT_BOX_START_ROW * 32 + NEXT_BOX_START_COL
+DEF NEXT_BOX_BASE_ADDRESS  EQU TILEMAP0 + NEXT_BOX_START_ROW * 32 + NEXT_BOX_START_COL
 
 
 
-DEF GAME_TOTAL_WIDTH EQU GAME_LEFT_PAD + WALL_WIDTH + GAME_WIDTH + WALL_WIDTH
-DEF UI_FOG_WIDTH     EQU UI_END_COL - GAME_TOTAL_WIDTH
+DEF GAME_TOTAL_WIDTH  EQU GAME_LEFT_PAD + WALL_WIDTH + GAME_WIDTH + WALL_WIDTH
+DEF UI_FOG_WIDTH      EQU UI_END_COL - GAME_TOTAL_WIDTH
 
 DEF GAME_BG_START_COL EQU GAME_LEFT_PAD + WALL_WIDTH ; = 3
 DEF GAME_BG_START_ROW EQU 0                         
@@ -49,44 +50,46 @@ DEF TITLE_TOTAL_COLS        EQU 32
 DEF TITLE_TOTAL_ROWS        EQU 32
 
 ;Tiles
-DEF TILE_SPACE   EQU 0
-DEF TILE_P       EQU 1
-DEF TILE_R       EQU 2
-DEF TILE_E       EQU 3
-DEF TILE_S       EQU 4
-DEF TILE_A       EQU 5
-DEF TILE_T       EQU 6
-DEF TILE_O       EQU 7
-DEF TILE_I       EQU 8
-DEF TILE_C       EQU 9
-DEF TILE_L       EQU 10
-DEF TILE_N       EQU 11
-DEF TILE_X       EQU 12
-DEF TILE_WALL    EQU 13
-DEF TILE_DIGIT_0 EQU 14
-DEF TILE_BOX     EQU 24
-DEF TILE_FOG     EQU 25
-DEF TILE_Ghost   EQU 26
-DEF TILE_G       EQU 27
-DEF TILE_M       EQU 28
-DEF TILE_V       EQU 29
-DEF AnimationStart   EQU 30
+DEF TILE_SPACE       EQU 0
+DEF TILE_P           EQU 1
+DEF TILE_R           EQU 2
+DEF TILE_E           EQU 3
+DEF TILE_S           EQU 4
+DEF TILE_A           EQU 5
+DEF TILE_T           EQU 6
+DEF TILE_O           EQU 7
+DEF TILE_I           EQU 8
+DEF TILE_C           EQU 9
+DEF TILE_L           EQU 10
+DEF TILE_N           EQU 11
+DEF TILE_X           EQU 12
+DEF TILE_WALL        EQU 13
+DEF TILE_DIGIT_0     EQU 14
+DEF TILE_BOX         EQU 24
+DEF TILE_FOG         EQU 25
+DEF TILE_Ghost       EQU 26
+DEF TILE_G           EQU 27
+DEF TILE_M           EQU 28
+DEF TILE_V           EQU 29
+DEF TILE_BIG_V       EQU 30
+DEF TILE_B           EQU 31
+DEF AnimationStart   EQU 32
 
 
 
-DEF KEY_A  EQU 0
-DEF KEY_B  EQU 1
+DEF KEY_A       EQU 0
+DEF KEY_B       EQU 1
 DEF KEY_SELECT  EQU 2
-DEF KEY_START  EQU 3
-DEF KEY_RIGHT  EQU 4
-DEF KEY_LEFT   EQU 5
-DEF KEY_UP     EQU 6
-DEF KEY_DOWN   EQU 7
+DEF KEY_START   EQU 3
+DEF KEY_RIGHT   EQU 4
+DEF KEY_LEFT    EQU 5
+DEF KEY_UP      EQU 6
+DEF KEY_DOWN    EQU 7
 
 
-DEF MIN_X      EQU 4
-DEF MAX_X      EQU 13  
-DEF MAP_OFFSET_X EQU 4  
+DEF MIN_X         EQU 4
+DEF MAX_X         EQU 13  
+DEF MAP_OFFSET_X  EQU 4  
 
 
 
@@ -96,8 +99,8 @@ SECTION "Header", ROM0[$100]
 
 SECTION "WRAM", WRAM0
 
-wPrevKeys: ds 1
-wCurKeys:  ds 1
+current: ds 1
+previous:  ds 1
 
 ; Game State
 Map:            ds 180  ; 10 * 18
@@ -106,8 +109,7 @@ NeedClearLines: ds 18
 BaseX:          ds 1
 BaseY:          ds 1
 GhostY:         ds 1
-next:           ds 1    
-paused:         ds 1
+next:           ds 1
 BGChanged:      ds 1    
 frameCounter:   ds 1
 animationFrameCounter:   ds 1
@@ -127,11 +129,6 @@ skipDropTime:   ds 1
 SECTION "Main", ROM0
 
 EntryPoint:
-    di
-    ld sp, $E000
-    xor a
-    ldh [rAUDENA], a
-    ldh [rIE], a
 
 .wait_vblank
     ldh a, [rLY]
@@ -152,10 +149,8 @@ EntryPoint:
     ld bc, TitleTilemapEnd - TitleTilemap
     call Copy
 
-    ; 4. Setup Palette & OAM
-    ld a, %11100100
-    ldh [rBGP], a
-    ld a, %11100100
+    ; 4. Setup Palette
+    ld a, %11111100
     ldh [rOBP0], a
     
     ; Clear OAM
@@ -166,14 +161,14 @@ EntryPoint:
     call CopyShadowOAMtoOAMTitle
 
     ; 5. Turn On
-    ld a, LCDC_ON | LCDC_OBJ_ON | LCDC_BG_ON | LCDC_BLOCK01 | LCDC_BG_9800
+    ld a, LCDC_ON | LCDC_OBJ_ON | LCDC_BG_ON | LCDC_BLOCK01 
     ldh [rLCDC], a
 
 ; --- Title Loop ---
 TitleLoop:
-    call ReadKeys
-    ld a, [wCurKeys]
-    bit 1, a            ; Wait for A (Z key)
+    call readKeys
+    ld a, [current]
+    bit 1, a            ; Wait for key
     jr z, TitleLoop
 
     call StartGameInit
@@ -181,37 +176,35 @@ TitleLoop:
 
 ; --- Game Loop ---
 MainLoop:
-    
+    call readKeys
+    call HandleInput
+    call AutoDrop
+    call Pause
+    call UpdateObjects
 
-  call ReadKeys
-  call HandleInput
-  call AutoDrop
-  call Pause
-  call UpdateObjects
-
-ld a, [next]
-  cp 1
-  jr nz, .notNext1
-  call LockCurrentPieceToMap
-  call ClearLine
+    ld a, [next]
+    cp 1
+    jr nz, .notNext1
+    call LockCurrentPieceToMap
+    call ClearLine
 .notNext1
 
-  call WaitVBlank ; Wait for VBlank here, before rendering
-  ld a, [next]
-  cp 1
-  jr nz, .notNext2
-  call RenderMapToBG
+    call WaitVBlank ; Wait for VBlank here, before rendering
+    ld a, [next]
+    cp 1
+    jr nz, .notNext2
+    call RenderMapToBG
   
 .notNext2
-  call CopyShadowOAMtoOAM
-  ld a, [GameOver]
-  and a
-  jp nz, GameOverSequence
+    call CopyShadowOAMtoOAM
+    ld a, [GameOver]
+    and a
+    jp nz, GameOverSequence
 
-  jp MainLoop
+    jp MainLoop
 
-  GameOverSequence:
-    
+; --- Game Over Loop ---
+GameOverSequence:
     ld e,255
 .waitVBlankGameOver:
     call WaitVBlank
@@ -238,8 +231,8 @@ ld a, [next]
     ldh [rLCDC], a
 
 .waitRestart:
-    call ReadKeys
-    ld a, [wCurKeys]
+    call readKeys
+    ld a, [current]
     bit 1, a
     jr z, .waitRestart
     
@@ -299,7 +292,7 @@ StartGameInit:
     and %00000111
     cp 7
     jr nz, .getFirstNextPiece
-   xor a
+     xor a
 .getFirstNextPiece:
     ld [nextPiece], a
 
@@ -317,469 +310,517 @@ StartGameInit:
     ret
 
 Pause:
-  ld a, [wCurKeys]
-  bit 1,a
-  ret z
+    ld a, [current]
+    bit 1,a
+    ret z
   
-;  pause
+  ;  pause
 .pauseLoop:
-  call ReadKeys
-  ld a, [wCurKeys]
-  bit 1,a
-  jr z, .pauseLoop
+    call readKeys
+    ld a, [current]
+    bit 1,a
+    jr z, .pauseLoop
 
-  ret
+    ret
   
 AutoDrop:
-  ld a,[next]
-  cp 1
-  jr nz, .notNew
-  ld a,0
-  ld [next],a
-  call GenerateNewPiece
-  ret
+    ld a,[next]
+    cp 1
+    jr nz, .notNew
+    ld a,0
+    ld [next],a
+    call GenerateNewPiece
+    ret
 .notNew:
-  ld a,[skipDropTime]
-  cp 1
-  jr z, .Skip
-  ld a, [frameCounter]
-  inc a
-  ld [frameCounter], a
-  ld b, a
-  ld a, [dropTime]
-  cp b
-  ret nz
+    ld a,[skipDropTime]
+    cp 1
+    jr z, .Skip
+    ld a, [frameCounter]
+    inc a
+    ld [frameCounter], a
+    ld b, a
+    ld a, [dropTime]
+    cp b
+    ret nz
 
-  .Skip:
-  xor a
-  ld [skipDropTime], a
-  and a
-  ld [frameCounter], a
-  call CheckCollisionDown
+.Skip:
+    xor a
+    ld [skipDropTime], a
+    and a
+    ld [frameCounter], a
+    call CheckCollisionDown
 
-  jr nc, .storeDown
-  ld a,1
-  ld [next],a
-  ret
+    jr nc, .storeDown
+    ld a,1
+    ld [next],a
+    ret
 
 .storeDown:
-  call MoveDown
-  ret
+    call MoveDown
+    ret
 
 MoveDown:
-  ld a, [BaseY]
-  inc a
-  ld [BaseY], a
-  ret
+    ld a, [BaseY]
+    inc a
+    ld [BaseY], a
+    ret
 
 UpdateScoreDisplay:
-  ; Update the Score display on the screen
-  ; get the score 
-  ld hl, Score
-  ld a, [hl+]
-  ld e, a
-  ld a, [hl]
-  ld d, a
+    ; Update the Score display on the screen
+    ; get the score 
+    ld hl, Score
+    ld a, [hl+]
+    ld e, a
+    ld a, [hl]
+    ld d, a
 
-  ; Compute the address of the Score display
-  ; Score is at row 4, col ( GAME_TOTAL_WIDTH + 1)
-  ld hl, TILEMAP0 + 3 * BG_WIDTH + (GAME_TOTAL_WIDTH + 1)
-  
-  ; Compute each digit
-  ; We compute how many times we can sub
+    ; Compute the address of the Score display
+    ; Score is at row 3, col ( GAME_TOTAL_WIDTH + 1)
+    ld hl, TILEMAP0 + 2 * BG_WIDTH + (GAME_TOTAL_WIDTH + 1)
+    
+    ; Compute each digit
+    ; We compute how many times we can sub
 
-  ; first digit
-  ld bc, 10000
-  call CountSubtractions
-  add TILE_DIGIT_0
-  ld [hl+], a
+    ; first digit
+    ld bc, 10000
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
 
-  ; second digit
-  ld bc, 1000
-  call CountSubtractions
-  add TILE_DIGIT_0
-  ld [hl+], a
+    ; second digit
+    ld bc, 1000
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
 
-  ; third digit
-  ld bc, 100
-  call CountSubtractions
-  add TILE_DIGIT_0
-  ld [hl+], a
+    ; third digit
+    ld bc, 100
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
 
-  ; fourth digit
-  ld bc, 10
-  call CountSubtractions
-  add TILE_DIGIT_0
-  ld [hl+], a
+    ; fourth digit
+    ld bc, 10
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
 
-  ; fifth digit
-  ld a, e
-  add TILE_DIGIT_0
-  ld [hl+], a
+    ; fifth digit
+    ld a, e
+    add TILE_DIGIT_0
+    ld [hl+], a
 
-  ret
+    ret
+    
+UpdateLevelDisplay:
+    ; Update the Lines display on the screen
+    ld hl, Level
+    ld a, [hl+]
+    ld e, a
+    ld a, [hl]
+    ld d, a
+    
 
+    ; Compute the address of the Lines display
+    ; Level is at row 9, col ( GAME_TOTAL_WIDTH + 1)
+    ld hl, TILEMAP0 + 8 * BG_WIDTH + (GAME_TOTAL_WIDTH + 1)
+    ; Compute each digit
+    ; We compute how many times we can sub
+
+    ; first digit
+    ld bc, 10000
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
+
+    ; second digit
+    ld bc, 1000
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
+
+    ; third digit
+    ld bc, 100
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
+
+    ; fourth digit
+    ld bc, 10
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
+
+    ; fifth digit
+    ld a, e
+    add TILE_DIGIT_0
+    ld [hl+], a
+
+    ret
 UpdateLinesDisplay:
-  ; Update the Lines display on the screen
-  ld a, [Lines]
-  ld e, a
-  ld d, 0
-  
+    ; Update the Lines display on the screen
+    ld a, [Lines]
+    ld e, a
+    ld d, 0
+    
 
-  ; Compute the address of the Lines display
-  ; Lines is at row 8, col ( GAME_TOTAL_WIDTH + 1)
-  ld hl, TILEMAP0 + 7 * BG_WIDTH + (GAME_TOTAL_WIDTH + 1)
-  ; Compute each digit
-  ; We compute how many times we can sub
+    ; Compute the address of the Lines display
+    ; Lines is at row 6, col ( GAME_TOTAL_WIDTH + 1)
+    ld hl, TILEMAP0 + 5 * BG_WIDTH + (GAME_TOTAL_WIDTH + 1)
+    ; Compute each digit
+    ; We compute how many times we can sub
 
-  ; first digit
-  ld bc, 1000
-  call CountSubtractions
-  add TILE_DIGIT_0
-  ld [hl+], a
+    ; first digit
+    ld bc, 1000
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
 
-  ; second digit
-  ld bc, 100
-  call CountSubtractions
-  add TILE_DIGIT_0
-  ld [hl+], a
+    ; second digit
+    ld bc, 100
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
 
-  ; third digit
-  ld bc, 10
-  call CountSubtractions
-  add TILE_DIGIT_0
-  ld [hl+], a
+    ; third digit
+    ld bc, 10
+    call CountSubtractions
+    add TILE_DIGIT_0
+    ld [hl+], a
 
-  ; fourth digit
-  ld a, e
-  add TILE_DIGIT_0
-  ld [hl+], a
+    ; fourth digit
+    ld a, e
+    add TILE_DIGIT_0
+    ld [hl+], a
 
-  ret
+    ret
 
 DrawNextPieceDisplay:
-  call WaitVBlank
-  ld hl,NEXT_BOX_SPACE_ADDRESS
-  ld b,4
-  .clearLoop:
+    call WaitVBlank
+    ld hl,NEXT_BOX_SPACE_ADDRESS
+    ld b,4
+.clearLoop:
     ld c,4
-  .clearInnerLoop:
+.clearInnerLoop:
     ld [hl],TILE_SPACE
     inc hl
     dec c
     jr nz, .clearInnerLoop
-    ld c,28
+    ld c,28         ;32 per line - 4 element
     ld a,l
     add c
     ld l,a
     jr nc,.noCarry0
-      inc h
-    .noCarry0:
+    inc h
+.noCarry0:
     dec b
     jr nz, .clearLoop
 
-  ld hl,PieceAddressTable
-  ld a,[nextPiece]
-  add a,a
-  add a,l
-  ld l,a
-  jr nc,.notcarray
-  inc h
+    ld hl,PieceAddressTable
+    ld a,[nextPiece]
+    add a,a
+    add a,l
+    ld l,a
+    jr nc,.notcarray
+    inc h
 .notcarray:
-  ld a,[hl+]
-  ld h,[hl]
-  ld l,a
+    ld a,[hl+]
+    ld h,[hl]
+    ld l,a
 
-  call WaitVBlank
-  ld b,4
-  .drawLoop:
+    call WaitVBlank
+    ld b,4
+.drawLoop:
 
-  push bc
-  ; --- Y ---
-  ld a, [hl]
-  inc hl
-  ld c, a          ; c = Y
-  ; --- X ---
-  ld a, [hl]
-  inc hl
-  ld b, a          ; b = X    
-  
-  push hl
-  push bc
-  ld hl,TILEMAP0
-  ld hl, NEXT_BOX_BASE_ADDRESS
-  ld a, c
-  bit 7, a
-  jr z, .positive
-  cpl
-  inc a             ; a = |c| 
-  
-  ld e, a
-  ld d, 0
+    push bc
+    ; --- Y ---
+    ld a, [hl]
+    inc hl
+    ld c, a          ; c = Y
+    ; --- X ---
+    ld a, [hl]
+    inc hl
+    ld b, a          ; b = X    
     
-  sla e
-  rl d
-  sla e
-  rl d
-  sla e
-  rl d
-  sla e
-  rl d
-  sla e
-  rl d              ; ×32
+    push hl
+    push bc
+    ld hl,TILEMAP0
+    ld hl, NEXT_BOX_BASE_ADDRESS
+    ld a, c
+    bit 7, a
+    jr z, .positive
+    cpl
+    inc a             ; a = |c| 
     
-  ld c, e
-  ld b,d
-  ld a, l
-  sub c
-  ld l, a
-  ld a, h
-  sbc b
-  ld h, a           ;hl+= -c*32
-  jr .ok 
-    
-.positive:
- 
-  ld e, a
-  ld d, 0
+    ld e, a
+    ld d, 0
+      
+    sla e
+    rl d
+    sla e
+    rl d
+    sla e
+    rl d
+    sla e
+    rl d
+    sla e
+    rl d              ; ×32
+      
+    ld c, e
+    ld b,d
+    ld a, l
+    sub c
+    ld l, a
+    ld a, h
+    sbc b
+    ld h, a           ;hl+= -c*32
+    jr .ok 
+      
+  .positive:
   
-  sla e
-  rl d
-  sla e
-  rl d
-  sla e
-  rl d
-  sla e
-  rl d
-  sla e
-  rl d              ; ×32
+    ld e, a
+    ld d, 0
+    
+    sla e
+    rl d
+    sla e
+    rl d
+    sla e
+    rl d
+    sla e
+    rl d
+    sla e
+    rl d              ; ×32
 
-  add hl, de
+    add hl, de
 .ok
-  pop bc
-  ld a,b
-  bit 7, a
-  jr z, .positive2
-  cpl
-  inc a             ; a = |b|
-  ld b,a
-  ld a, l
-  sub b
-  ld l, a
-  jr nc, .noCarry1
-  dec h
-  .noCarry1:
-  jr .noCarry
+    pop bc
+    ld a,b
+    bit 7, a
+    jr z, .positive2
+    cpl
+    inc a             ; a = |b|
+    ld b,a
+    ld a, l
+    sub b
+    ld l, a
+    jr nc, .noCarry1
+    dec h
+.noCarry1:
+    jr .noCarry
 .positive2:
-  add a, l
-  ld l, a
-  jr nc, .noCarry
-  inc h
-  .noCarry:
-;hl=NEXT_BOX_BASE_ADDRESS + c*32 + d
+    add a, l
+    ld l, a
+    jr nc, .noCarry
+    inc h
+.noCarry:
+  ;hl=NEXT_BOX_BASE_ADDRESS + c*32 + d
 
-  ld [hl],TILE_BOX
-  pop hl
-  pop bc
+    ld [hl],TILE_BOX
+    pop hl
+    pop bc
 
-  dec b
-  jr nz, .drawLoop
+    dec b
+    jr nz, .drawLoop
 
-  ld a, 1
-  ld [BGChanged], a
-  ret
+    ld a, 1
+    ld [BGChanged], a
+    ret
 
 CountSubtractions:
-  ; Input : DE = the number we need to sub
-  ;         BC = the sub number
-  ; Output: A  = the counter
-  ;         DE = the remainder
-  push hl
-  ld hl, 0 ; counter
+    ; Input : DE = the number we need to sub
+    ;         BC = the sub number
+    ; Output: A  = the counter
+    ;         DE = the remainder
+    push hl
+    ld hl, 0 ; counter
 .countLoop:
-  ; compare de, bc
-  ld a, d
-  cp b
-  jr c, .done ; d < b, de < bc
-  jr nz, .subtract ; d > b, de > bc
-  ; d = b
-  ld a, e
-  cp c
-  jr c, .done
+    ; compare de, bc
+    ld a, d
+    cp b
+    jr c, .done ; d < b, de < bc
+    jr nz, .subtract ; d > b, de > bc
+    ; d = b
+    ld a, e
+    cp c
+    jr c, .done
 
 .subtract:
-  ; de >= bc, subtract
-  ld a, e
-  sub c
-  ld e, a
-  ld a, d
-  sbc b
-  ld d, a
-  
-  inc hl
-  jr .countLoop
+    ; de >= bc, subtract
+    ld a, e
+    sub c
+    ld e, a
+    ld a, d
+    sbc b
+    ld d, a
+    
+    inc hl
+    jr .countLoop
 
 .done:
-  ld a, l
-  pop hl
-  ret
+    ld a, l
+    pop hl
+    ret
   
 GetDropTime:
-  ; baseDropTime = 40
-  ; DropTime = baseDropTime - level * 2
-  ; level = 0, 1, 2, ....., 10
-  push bc
-  push hl
-  
-  ld a, [Level]
-  cp 10
-  jr c, .levelInRange
-  ld a, 10
+    ; baseDropTime = 40
+    ; DropTime = baseDropTime - level * 2
+    ; level = 0, 1, 2, ....., 10
+    push bc
+    push hl
+    
+    ld a, [Level]
+    cp 10
+    jr c, .levelInRange
+    ld a, 10
 .levelInRange:
-  ld c, a
-  ld a, 40
-  sub c
-  sub c
-  
-  cp 20 ; min dropTime
-  jr nc, .noMin
-  ld a, 20
-  
+    ld [Level], a
+    ld c, a
+    ld a, 40
+    sub c
+    sub c
+    
+    cp 20 ; min dropTime
+    jr nc, .noMin
+    ld a, 20
+    
 .noMin:
-  ld [dropTime], a
-  pop hl
-  pop bc
-  ret
+    ld [dropTime], a
+    pop hl
+    pop bc
+    ret
 
 UpdateLevel:
-  ; 5 lines 1 level
-  push af
-  push bc
-  
-  ; level = lines / 5
-  ld a, [Lines]
-  ld b, 0
+    ; 5 lines 1 level
+    push af
+    push bc
+    
+    ; level = lines / 5
+    ld a, [Lines]
+    ld b, 0
 .countLevel:
-   cp 5
-   jr c, .done
-   sub 5
-   inc b
-   jr .countLevel
-   
+    cp 5
+    jr c, .done
+    sub 5
+    inc b
+    jr .countLevel
+    
 .done:
-  ld a, b
-  ld [Level], a
+    ld a, b
+    ld [Level], a
+    
+    call UpdateLevelDisplay
+    call GetDropTime
+    
+    pop bc
+    pop af
+    ret
   
-  call GetDropTime
-  
-  pop bc
-  pop af
-  ret
-  
+
 ClearLine:
-; from the last line, check whether do we need to clear the line
+    ; from the last line, check whether do we need to clear the line
   
-  ld b, 17  ; from the last line
-  ld c, 0   ; c is the cleared line counter
+    ld b, 17  ; from the last line
+    ld c, 0   ; c is the cleared line counter
   
 .checkCurrentLine:
-  ; Check whether b = 0
-  ld a, b
-  and a
-  jr z, .finishChecking
+    ; Check whether b = 0
+    ld a, b
+    and a
+    jr z, .finishChecking
 
-  ld hl, Map
-  ld a, b
-  call MultiplyBy10 ; de = b * 10
-  add hl, de        ; hl = Map + b*10
-  
-  ; Check whether the line need to clear
-  push bc
-  ld d, 10
-  ld e, 0
+    ld hl, Map
+    ld a, b
+    call MultiplyBy10 ; de = b * 10
+    add hl, de        ; hl = Map + b*10
+    
+    ; Check whether the line need to clear
+    push bc
+    ld d, 10
+    ld e, 0
   
 .checkRow:
-  ld a, [hl+]
-  and a
-  jr z, .notFull
-  inc e
-  dec d
-  jr nz, .checkRow
+    ld a, [hl+]
+    and a
+    jr z, .notFull
+    inc e
+    dec d
+    jr nz, .checkRow
 .notFull:
   
-  ; if e = 10, full, need to clear
-  ld a, e
-  cp 10
-  jr nz, .rowNotFull
+    ; if e = 10, full, need to clear
+    ld a, e
+    cp 10
+    jr nz, .rowNotFull
 
-  ;set this line map to 2, in order to play animation
-  ld a,l
-  sub 10
-  ld l,a
-  jr nc,.noCarry
-  dec h
+    ;set this line map to 2, in order to play animation
+    ld a,l
+    sub 10
+    ld l,a
+    jr nc,.noCarry
+    dec h
 .noCarry:
 
-  ld d,10
-  .checkRow2:
-  ld  [hl],2
-  inc hl
-  dec d
-  jr nz, .checkRow2
-  ;full
+    ld d,10
+    .checkRow2:
+    ld  [hl],2
+    inc hl
+    dec d
+    jr nz, .checkRow2
+    ;full
 
-  pop bc
-  inc c 
-  push hl
-  ld hl,NeedClearLines
-  ld a, l
-  add b
-  ld l,a
-  jr nc,.noCarry2
+    pop bc
+    inc c 
+    push hl
+    ld hl,NeedClearLines
+    ld a, l
+    add b
+    ld l,a
+    jr nc,.noCarry2
     inc h
 .noCarry2:
-  ld [hl], 1
-  pop hl
-  push bc
+    ld [hl], 1
+    pop hl
+    push bc
 .rowNotFull:
-  pop bc
-  dec b ; move to the above line
-  ld a, b
-  cp $FF ; when b underflowed, done
-  jp nz, .checkCurrentLine
-
-  ; finish checking all lines
-.finishChecking:
-  ld a, c
-  and a
-  jp z, .noLinesCleared
-
-  call RenderMapAmination         ;play animation
-
-  ld b, 17
-.clearCurrentLine:
-  ; Check whether b = 0
-  push bc
-  ld hl,NeedClearLines
-  ld a, l
-  add b
-  ld l,a
-  jr nc,.noCarry3
-  inc h
-.noCarry3:
-  ld a, b
-  and a
-  jr z, .finishedClearing
-  ld a, b 
-  ld [TempX], a       ; TempX = clearedRow
-  ld [TempY], a       ; TempY = shift cursor
-  ld a, [hl]
-  and a
-  jr z, .nextLineToClear
+    pop bc
+    dec b ; move to the above line
     ld a, b
-    ld [TempX], a
-    ld [TempY], a
-  .shiftLoop:
+    cp $FF ; when b underflowed, done
+    jp nz, .checkCurrentLine
+
+; finish checking all lines
+.finishChecking:
+    ld a, c
+    and a
+    jp z, .noLinesCleared
+
+    call RenderMapAmination         ;play animation
+
+    ld b, 17
+.clearCurrentLine:
+    ; Check whether b = 0
+    push bc
+    ld hl,NeedClearLines
+    ld a, l
+    add b
+    ld l,a
+    jr nc,.noCarry3
+    inc h
+.noCarry3:
+    ld a, b
+    and a
+    jr z, .finishedClearing
+    ld a, b 
+    ld [TempX], a       ; TempX = clearedRow
+    ld [TempY], a       ; TempY = shift cursor
+    ld a, [hl]
+    and a
+    jr z, .nextLineToClear
+      ld a, b
+      ld [TempX], a
+      ld [TempY], a
+.shiftLoop:
     ld a, [TempY]
     and a
     jr z, .clearTopLine  ; when TempY=0, done shifting, then clear top
@@ -793,8 +834,8 @@ ClearLine:
     add l
     ld l,a
     jr nc,.noCarry4
-      inc h
-    .noCarry4:
+    inc h
+.noCarry4:
     ld a,[hl]
     inc hl
     ld [hl],a
@@ -819,7 +860,7 @@ ClearLine:
 
     ; copy 10 times
     ld b, 10
-  .copy10:
+.copy10:
     ld a, [hl+]
     ld [de], a
     inc de
@@ -831,14 +872,14 @@ ClearLine:
     ld [TempY], a
     
     jr .shiftLoop
-  .clearTopLine:
+.clearTopLine:
     ld hl,NeedClearLines
     xor a
     ld [hl], a
     ld hl, Map
     ld b, 10
     xor a
-  .clearTopLoop:
+.clearTopLoop:
     ld [hl+], a
     dec b
     jr nz, .clearTopLoop
@@ -854,66 +895,65 @@ ClearLine:
     jr .clearCurrentLine
 
 .nextLineToClear
-  pop bc
-  dec hl
-  dec b ; move to the above line
-  ld a, b
-  cp $FF ; when b underflowed, done
-  jp nz, .clearCurrentLine
+    pop bc
+    dec hl
+    dec b ; move to the above line
+    ld a, b
+    cp $FF ; when b underflowed, done
+    jp nz, .clearCurrentLine
 
 .finishedClearing:
-pop bc
+    pop bc
 
 
 
-  ; make sure BG will refresh
-  ld a, 1
-  ld [BGChanged], a
+    ; make sure BG will refresh
+    ld a, 1
+    ld [BGChanged], a
 
-  ; update Scores
-  ; use two bytes to store Score
-  ld hl, Score
-  ld a, c
-  cp 1
-  jr z, .oneLine
-  cp 2
-  jr z, .twoLines
-  cp 3
-  jr z, .threeLines
-  ; four lines
-  ld de, 800
-  jr .updateScore
+    ; update Scores
+    ; use two bytes to store Score
+    ld hl, Score
+    ld a, c
+    cp 1
+    jr z, .oneLine
+    cp 2
+    jr z, .twoLines
+    cp 3
+    jr z, .threeLines
+    ; four lines
+    ld de, 800
+    jr .updateScore
 .oneLine:
-  ld de, 100
-  jr .updateScore
+    ld de, 100
+    jr .updateScore
 .twoLines:
-  ld de, 300
-  jr .updateScore
+    ld de, 300
+    jr .updateScore
 .threeLines:
-  ld de, 500
+    
 .updateScore:
-  ld a, [hl]
-  add e
-  ld [hl+], a
-  ld a, [hl]
-  adc d
-  ld [hl+], a
-  ; update Lines
-  ld a, [Lines]
-  add c
-  ld [Lines], a
-  
-  call UpdateLevel
-  call WaitVBlank
-  call UpdateScoreDisplay
-  call UpdateLinesDisplay
+    ld a, [hl]
+    add e
+    ld [hl+], a
+    ld a, [hl]
+    adc d
+    ld [hl+], a
+    ; update Lines
+    ld a, [Lines]
+    add c
+    ld [Lines], a
+    
+    call UpdateLevel
+    call WaitVBlank
+    call UpdateScoreDisplay
+    call UpdateLinesDisplay
+    call UpdateLevelDisplay
 .noLinesCleared:
-
-  ret
-
+    ret
 
 HandleInput:
-    ld a, [wCurKeys]
+    ld a, [current]
     
     bit KEY_UP, a ; UP
     jr z, .checkRoutateLeft
@@ -935,8 +975,8 @@ HandleInput:
 .checkLeft:
     bit KEY_LEFT, a ; LEFT
     jr z, .checkRight
-  call CheckCollisionLeft
-  jr c, .checkRight
+    call CheckCollisionLeft
+    jr c, .checkRight
     ld a, [BaseX]
     dec a
     cp MIN_X
@@ -946,8 +986,8 @@ HandleInput:
 .checkRight:
     bit KEY_RIGHT, a ; RIGHT
     jr z, .checkDown
-  call CheckCollisionRight
-  jr c, .checkDown
+    call CheckCollisionRight
+    jr c, .checkDown
     ld a, [BaseX]
     inc a
     cp MAX_X
@@ -958,8 +998,8 @@ HandleInput:
 .checkDown:
     bit KEY_DOWN, a ; DOWN
     jr z, .endInput
-  call CheckCollisionDown
-  jr c, .endInput
+    call CheckCollisionDown
+    jr c, .endInput
     ld a, [BaseY]
     inc a
     cp 18
@@ -980,14 +1020,12 @@ Rotate:
     ld e,0
     jr nc, .applyMove
 
-
     ld e, 1           ; Try moving right by 1
     call CheckCollisionRotateRight
     ld d, 0
     ld e,1
     
     jr nc, .applyMove
-
 
     xor a
     ld e,a
@@ -1019,7 +1057,7 @@ Rotate:
 
     ret c
 
-  .applyMove:
+.applyMove:
     ld a, [BaseX]
     add e             ; Apply the movement
     sub d
@@ -1028,12 +1066,12 @@ Rotate:
     add 8
     cp 32
     jr c, .ok
-      xor a
-    .ok:
+    xor a
+.ok:
     ld [RotationState], a
     ret
 
-  .noFurtherCheck:
+.noFurtherCheck:
     ret
 
 RotateLeft:
@@ -1086,7 +1124,7 @@ RotateLeft:
 
     ret c
 
-  .applyMove:
+.applyMove:
     ld a, [BaseX]
     add e             ; Apply the movement
     sub d
@@ -1100,330 +1138,329 @@ RotateLeft:
     ld [RotationState], a
     ret
 
-  .noFurtherCheck:
+.noFurtherCheck:
     ret
 
 GenerateNewPiece:
-  ld a, [nextPiece]
-  ld [currentPiece], a
+    ld a, [nextPiece]
+    ld [currentPiece], a
 
-  call RandomByte
-  and %00000111
-  cp 7
-  jr nz, .getNextPiece
-  xor a
+    call RandomByte
+    and %00000111
+    cp 7
+    jr nz, .getNextPiece
+    xor a
 .getNextPiece:
-  ld [nextPiece], a
+    ld [nextPiece], a
 
-  ; update the next display
-  call DrawNextPieceDisplay
+    ; update the next display
+    call DrawNextPieceDisplay
 
-  ; reset position
-  ld a, 8
-  ld [BaseX], a
-  ld a, 3
-  ld [BaseY], a
-  ld a, 0
-  ld [RotationState], a
-  
-call CheckCollisionDown
+    ; reset position
+    ld a, 8
+    ld [BaseX], a
+    ld d, a ; d : Xcoord
+    ld a, 2
+    ld [BaseY], a
+    ld e, a ; e : Ycoord
+    ld a, 0
+    ld [RotationState], a
+    
+    call CheckCollisionAtPosition
     jr c, .gameOver
     ret
 .gameOver:
     ld a, 1
     ld [GameOver], a
 
-  ret
+    ret
  
 
 HardDropFunction:
-  ; Drop the piece until it collides  
-  .dropLoop:
+; Drop the piece until it collides  
+.dropLoop:
     call CheckCollisionDown
     jr c, .doneDrop
     call MoveDown
     jr .dropLoop
-  .doneDrop:
-ld a,1
-  ld [skipDropTime], a
-  ret
+.doneDrop:
+    ld a,1
+    ld [skipDropTime], a
+    ret
 
   
 CheckCollisionRotateRight:
-  ld a, [BaseX]
-  sub d
-  add e 
-  ld d, a ; d : Xcoord
-  ld a, [BaseY]
-  ld e, a ; e : Ycoord
-  ld a, [RotationState]
-  add a, 8
-  cp 32
-  jr c, .ok
+    ld a, [BaseX]
+    sub d
+    add e 
+    ld d, a ; d : Xcoord
+    ld a, [BaseY]
+    ld e, a ; e : Ycoord
+    ld a, [RotationState]
+    add a, 8
+    cp 32
+    jr c, .ok
     xor a
-  .ok:
-  ld c,a
-  call CheckCollisionAtPosition
-  ret
+.ok:
+    ld c,a
+    call CheckCollisionAtPosition
+    ret
 
 
 CheckCollisionRotateLeft:
-  ld a, [BaseX]
-  sub d
-  add e
-  ld d, a ; d : Xcoord
-  ld a, [BaseY]
-  ld e, a ; e : Ycoord
-  ld a, [RotationState]
+    ld a, [BaseX]
+    sub d
+    add e
+    ld d, a ; d : Xcoord
+    ld a, [BaseY]
+    ld e, a ; e : Ycoord
+    ld a, [RotationState]
     sub 8
     jr nc, .okL
     ld a, 24
 .okL:
     ld c, a
-  call CheckCollisionAtPosition
-  ret
+    call CheckCollisionAtPosition
+    ret
 
 
 CheckCollisionDown:
-  ld a, [BaseX]
-  ld d, a ; d : Xcoord
-  ld a, [BaseY]
-  ld e, a ; e : Ycoord
-  ld a, [RotationState]
-  ld c, a ; c : rotation state
-  
-  call CheckCollisionAtPosition
-  ret
+    ld a, [BaseX]
+    ld d, a ; d : Xcoord
+    ld a, [BaseY]
+    ld e, a ; e : Ycoord
+    ld a, [RotationState]
+    ld c, a ; c : rotation state
+    
+    call CheckCollisionAtPosition
+    ret
 
 CheckCollisionLeft:
-  ld a, [BaseX]
-  dec a
-  ld d, a ; d : Xcoord
-  ld a, [BaseY]
-  dec a
-  ld e, a ; e : Ycoord
-  ld a, [RotationState]
-  ld c, a ; c : rotation state
-  
-  call CheckCollisionAtPosition
-  ret
+    ld a, [BaseX]
+    dec a
+    ld d, a ; d : Xcoord
+    ld a, [BaseY]
+    dec a
+    ld e, a ; e : Ycoord
+    ld a, [RotationState]
+    ld c, a ; c : rotation state
+    
+    call CheckCollisionAtPosition
+    ret
 
 CheckCollisionRight:
-  ld a, [BaseX]
-  inc a
-  ld d, a ; d : Xcoord
-  ld a, [BaseY]
-  dec a
-  ld e, a ; e : Ycoord
-  ld a, [RotationState]
-  ld c, a ; c : rotation state
-  
-  call CheckCollisionAtPosition
-  ret
+    ld a, [BaseX]
+    inc a
+    ld d, a ; d : Xcoord
+    ld a, [BaseY]
+    dec a
+    ld e, a ; e : Ycoord
+    ld a, [RotationState]
+    ld c, a ; c : rotation state
+    
+    call CheckCollisionAtPosition
+    ret
 
 CheckCollisionAtPosition:
-  ; Get the address of the piece data
-  ld b,0
+    ; Get the address of the piece data
+    ld b,0
 
-  ld hl,PieceAddressTable
-  ld a,[currentPiece]
-  add a,a
-  add a,l
-  ld l,a
-  jr nc,.notcarray
-  inc h
+    ld hl,PieceAddressTable
+    ld a,[currentPiece]
+    add a,a
+    add a,l
+    ld l,a
+    jr nc,.notcarray
+    inc h
 .notcarray:
-  ld a,[hl+]
-  ld h,[hl]
-  ld l,a
+    ld a,[hl+]
+    ld h,[hl]
+    ld l,a
 
-  add hl, bc       ; hl + current rotation data
- 
-
-
-  ld b, 4 ; Each Tetromino has 4 blocks
+    add hl, bc       ; hl + current rotation data
+  
+    ld b, 4 ; Each Tetromino has 4 blocks
 .checkLoop:
-  push bc
-  push hl
-  push de
-  ; OffsetY 
-  ld a, [hl+]
-  add e ; e : Ycoord
-  ld c, a 
-  ; OffsetX
-  ld a, [hl]
-  add d ; d : Xcoord
-  ld b, a
+    push bc
+    push hl
+    push de
+    ; OffsetY 
+    ld a, [hl+]
+    add e ; e : Ycoord
+    ld c, a 
+    ; OffsetX
+    ld a, [hl]
+    add d ; d : Xcoord
+    ld b, a
 
-  ; Check the boundary
-  ld a, b
-  cp 4
-  jr c, .collision
-  cp 14
-  jr nc, .collision
-  ld a, c
+    ; Check the boundary
+    ld a, b
+    cp 4
+    jr c, .collision
+    cp 14
+    jr nc, .collision
+    ld a, c
+    
+    cp 19
+    jr nc, .collision
+
+    ; Check map collision
+    ; The Index of piece: Y * 10 + X
+
+    dec c
+    ld a, c
+    add a, a            ; *2
+    ld l, a
+    ld h, 0
+    ld de, MapRowTable
+    add hl, de
+    ld a, [hl+]
+    ld h, [hl]
+    ld l, a             ; HL = first address of the row
+    
+    ; HL += (X - 4)
+    ld a, b
+    sub 4
+    add l
+    jr nc,.notcarry
+    inc h
+.notcarry
+    ld l,a
+    ld a, [hl]
   
-  cp 19
-  jr nc, .collision
+    cp 1
+    jr z, .collision
+    pop de
+    pop hl
+    pop bc
+    
+    inc hl
+    inc hl
+    dec b
+    jr nz, .checkLoop
 
-  ; Check map collision
-  ; The Index of piece: Y * 10 + X
-
-  dec c
-  ld a, c
-  add a, a            ; *2
-  ld l, a
-  ld h, 0
-  ld de, MapRowTable
-  add hl, de
-  ld a, [hl+]
-  ld h, [hl]
-  ld l, a             ; HL = 行起始地址
-  
-  ; HL += (X - 4)
-  ld a, b
-  sub 4
-  add l
-  jr nc,.notcarry
-  inc h
-  .notcarry
-  ld l,a
-  ld a, [hl]
-  
-  cp 1
-  jr z, .collision
-  pop de
-  pop hl
-  pop bc
-  
-  inc hl
-  inc hl
-  dec b
-  jr nz, .checkLoop
-
-  ; no collision
-  and a ; clear the carry flag (no collision)
-  jr .noCollision
-
+    ; no collision
+    and a ; clear the carry flag (no collision)
+    jr .noCollision
 
 .collision:
-  pop de
-  pop hl
-  pop bc
-  scf ; set the carry flag (collision)
-  ret
+    pop de
+    pop hl
+    pop bc
+    scf ; set the carry flag (collision)
+    ret
 .noCollision:
-  ret
+    ret
   
 LockCurrentPieceToMap:
-  ld a, [BaseX]
-  ld d, a          ; d = BaseX
-  ld a, [BaseY]
-  ld e, a          ; e = BaseY
+    ld a, [BaseX]
+    ld d, a          ; d = BaseX
+    ld a, [BaseY]
+    ld e, a          ; e = BaseY
 
-  ld a, [RotationState]     ; rotation (0 / 8 / 16 / 24)
-  
-  ld b, 0
-  ld c, a
+    ld a, [RotationState]     ; rotation (0 / 8 / 16 / 24)
+    
+    ld b, 0
+    ld c, a
 
-  ld hl,PieceAddressTable
-  ld a,[currentPiece]
-  add a,a
-  add a,l
-  ld l,a
-  jr nc,.notcarray
-  inc h
+    ld hl,PieceAddressTable
+    ld a,[currentPiece]
+    add a,a
+    add a,l
+    ld l,a
+    jr nc,.notcarray
+    inc h
 .notcarray:
-  ld a,[hl+]
-  ld h,[hl]
-  ld l,a
+    ld a,[hl+]
+    ld h,[hl]
+    ld l,a
 
-  add hl, bc       ; hl + current rotation data
- 
-  ld b,4
+    add hl, bc       ; hl + current rotation data
+  
+    ld b,4
 .loop
-  push bc
-  ; --- Y ---
-  ld a, [hl]
-  inc hl
-  add e 
-  ld c, a          ; c = Y
-  ; --- X ---
-  ld a, [hl]
-  inc hl
-  add d
-  ld b, a          ; b = X
-  push hl
-  push de
-  call MarkPieceIntoMap
-  pop de
-  pop hl
-  pop bc
-  dec b
-  jr nz, .loop
- 
-  ld a, 1
-  ld [BGChanged], a
- 
-  ret
+    push bc
+    ; --- Y ---
+    ld a, [hl]
+    inc hl
+    add e 
+    ld c, a          ; c = Y
+    ; --- X ---
+    ld a, [hl]
+    inc hl
+    add d
+    ld b, a          ; b = X
+    push hl
+    push de
+    call MarkPieceIntoMap
+    pop de
+    pop hl
+    pop bc
+    dec b
+    jr nz, .loop
+  
+    ld a, 1
+    ld [BGChanged], a
+  
+    ret
 
 MarkPieceIntoMap:
-  ; b = X (4–14)
-  ; c = Y (1–18)
+    ; b = X (4–14)
+    ; c = Y (1–18)
 
-  ; HL = MapRowTable[(Y-1)] 
-  dec c
-  dec c
-  ld a, c
-  add a, a            ; *2
-  ld l, a
-  ld h, 0
-  ld de, MapRowTable
-  add hl, de
-  ld a, [hl+]
-  ld h, [hl]
-  ld l, a             ; HL = first address of the row
-  
-  ; HL += (X - 4)
-  ld a, b
-  sub 4
-  add l
-  jr nc,.notcarry
-  inc h
-  .notcarry
-  ld l,a
-  
-  ld a, 1
-  ld [hl],a
-  ret
+    ; HL = MapRowTable[(Y-1)] 
+    dec c
+    dec c
+    ld a, c
+    add a, a            ; *2
+    ld l, a
+    ld h, 0
+    ld de, MapRowTable
+    add hl, de
+    ld a, [hl+]
+    ld h, [hl]
+    ld l, a             ; HL = first address of the row
+    
+    ; HL += (X - 4)
+    ld a, b
+    sub 4
+    add l
+    jr nc,.notcarry
+    inc h
+.notcarry
+    ld l,a
+    
+    ld a, 1
+    ld [hl],a
+    ret
 
-  ;Compute the ghost piece position
+;Compute the ghost piece position
 UpdateGhostPiece:
-  ld a, [BaseX]
-  ld d, a ; d : X
-  ld a, [BaseY]
-  dec a
-  ld e, a ; e : Y
-  ld a, [RotationState]
-  ld c, a ; c : rotation state
+    ld a, [BaseX]
+    ld d, a ; d : X
+    ld a, [BaseY]
+    dec a
+    ld e, a ; e : Y
+    ld a, [RotationState]
+    ld c, a ; c : rotation state
 .loop
-  ld a, e
-  inc a
-  ld e, a
-  ld [GhostY], a
-  call CheckCollisionAtPosition
-  jr nc, .loop
-  
-  ret
+    ld a, e
+    inc a
+    ld e, a
+    ld [GhostY], a
+    call CheckCollisionAtPosition
+    jr nc, .loop
+    
+    ret
 
 RandomByte:
 ; Return a "random" byte into A
 ; by mixing a few values with XOR
-  ld a,[rDIV]
-  xor b
-  xor l
-  xor [hl]
-  ret
+    ld a,[rDIV]
+    xor b
+    xor l
+    xor [hl]
+    ret
 ResetShadowOAM:
     ld hl, ShadowOAM
     call ResetOAM
@@ -1433,284 +1470,281 @@ ResetShadowOAM:
 ; =========================================================
 
 UpdateObjects:  
-  call UpdateGhostPiece
-  ld a,[RotationState]
-  ld b,0
-  ld c,a
-  ld hl,PieceAddressTable
-  ld a,[currentPiece]
-  add a,a
-  add a,l
-  ld l,a
-  jr nc,.notcarray
-  inc h
+    call UpdateGhostPiece
+    ld a,[RotationState]
+    ld b,0
+    ld c,a
+    ld hl,PieceAddressTable
+    ld a,[currentPiece]
+    add a,a
+    add a,l
+    ld l,a
+    jr nc,.notcarray
+    inc h
 .notcarray:
-  ld a,[hl+]
-  ld h,[hl]
-  ld l,a
+    ld a,[hl+]
+    ld h,[hl]
+    ld l,a
 
-  add hl,bc
-  ld d,h
-  ld e,l
-  ld hl,ShadowOAM
-  push de
-  ld c,4
+    add hl,bc
+    ld d,h
+    ld e,l
+    ld hl,ShadowOAM
+    push de
+    ld c,4
 .loop
-  ld a,[BaseY]
-  ld b,a
-  ld a,[de]
-  add b
-  sla a
-  sla a
-  sla a
-  
-  ld [hl],a
-  inc hl
-  
-  inc de
-  ld a,[BaseX]
-  ld b,a
-  ld a,[de]
-  add b
-  sla a
-  sla a
-  sla a
+    ld a,[BaseY]
+    ld b,a
+    ld a,[de]
+    add b
+    sla a
+    sla a
+    sla a
+    
+    ld [hl],a
+    inc hl
+    
+    inc de
+    ld a,[BaseX]
+    ld b,a
+    ld a,[de]
+    add b
+    sla a
+    sla a
+    sla a
 
-  ld [hl],a
-  inc hl
-  ld a,TILE_BOX
-  ld [hl],a
-  inc hl
-  inc hl
-  
-  inc de
-  dec c
-  jr nz,.loop
+    ld [hl],a
+    inc hl
+    ld a,TILE_BOX
+    ld [hl],a
+    inc hl
+    inc hl
+    
+    inc de
+    dec c
+    jr nz,.loop
 
-  ;ghost piece
-  pop de
-  ld c,4
+    ;ghost piece
+    pop de
+    ld c,4
 .loop2
-  ld a,[GhostY]
-  ld b,a
-  ld a,[de]
-  add b
-  sla a
-  sla a
-  sla a
-  
-  ld [hl],a
-  inc hl
-  
-  inc de
-  ld a,[BaseX]
-  ld b,a
-  ld a,[de]
-  add b
-  sla a
-  sla a
-  sla a
-  
-  ld [hl],a
-  inc hl
-  ld a,TILE_Ghost
-  ld [hl],a
-  inc hl
-  inc hl
-  
-  inc de
-  dec c
-  jr nz,.loop2
-  
-  ret
+    ld a,[GhostY]
+    ld b,a
+    ld a,[de]
+    add b
+    sla a
+    sla a
+    sla a
+    
+    ld [hl],a
+    inc hl
+    
+    inc de
+    ld a,[BaseX]
+    ld b,a
+    ld a,[de]
+    add b
+    sla a
+    sla a
+    sla a
+    
+    ld [hl],a
+    inc hl
+    ld a,TILE_Ghost
+    ld [hl],a
+    inc hl
+    inc hl
+    
+    inc de
+    dec c
+    jr nz,.loop2
+    
+    ret
 
 
 ;Render 
 RenderMapToBG:
-  ld a, [BGChanged]
-  cp 1
-  ret nz              ; no change, do not render
+    ld a, [BGChanged]
+    cp 1
+    ret nz              ; no change, do not render
 
-  ld hl, Map
-  ld de, TILEMAP0
-  ld a, 3             ; x offset 3
-  add a, e
-  ld e, a
-  jr nc, .noCarryX
-  inc d
+    ld hl, Map
+    ld de, TILEMAP0
+    ld a, 3             ; x offset 3
+    add a, e
+    ld e, a
+    jr nc, .noCarryX
+    inc d
 .noCarryX:
-
-  ld b, 18
+    ld b, 18
 
 .rowLoop:
-  push bc
-  ld c, 10
+    push bc
+    ld c, 10
 
 .colLoop:
-  ld a, [hl+]         ; read Map
-  cp 0
-  jr z, .blank
+    ld a, [hl+]         ; read Map
+    cp 0
+    jr z, .blank
 
-  ld a, TILE_BOX             ; box tile
-  jr .write
+    ld a, TILE_BOX             ; box tile
+    jr .write
 
 .blank:
-  ld a, TILE_SPACE             ; space tile
+    ld a, TILE_SPACE             ; space tile
 
 .write:
-  ld [de], a
-  inc de
-  dec c
-  jr nz, .colLoop
+    ld [de], a
+    inc de
+    dec c
+    jr nz, .colLoop
 
-  ; jump 22 to next row
-  ld a, b
-  cp 4
-  jr nz, .endRowSkip
-  call WaitVBlank
+    ; jump 22 to next row
+    ld a, b
+    cp 4
+    jr nz, .endRowSkip
+    call WaitVBlank
 .endRowSkip:
-
-  cp 9
-  jr nz, .endRowSkip2
-  call WaitVBlank
+    cp 9
+    jr nz, .endRowSkip2
+    call WaitVBlank
 .endRowSkip2:
 
   
-  cp 14
-  jr nz, .endRowSkip3
-  call WaitVBlank
+    cp 14
+    jr nz, .endRowSkip3
+    call WaitVBlank
 .endRowSkip3:
-  ld a, e
-  add a, 22
-  ld e, a
-  jr nc, .noCarryRow
-  inc d
+    ld a, e
+    add a, 22
+    ld e, a
+    jr nc, .noCarryRow
+    inc d
 .noCarryRow:
+    pop bc
+    dec b
+    jr nz, .rowLoop
 
-  pop bc
-  dec b
-  jr nz, .rowLoop
-
-  xor a
-  ld [BGChanged], a
-  ret
+    xor a
+    ld [BGChanged], a
+    ret
 
 
   
 RenderMapAmination:
-  call WaitVBlank
-  ld hl, STARTOF(OAM)
-  ld b, 32
-  xor a
+    call WaitVBlank
+    ld hl, STARTOF(OAM)
+    ld b, 32
+    xor a
 .loop:
-  ld [hl], a
-  inc hl
-  dec b
-  jr nz, .loop
+    ld [hl], a
+    inc hl
+    dec b
+    jr nz, .loop
 
 
-  call WaitVBlank
-  ld b, 7           ;totally 7 frames
-  xor a
-  ld [animationFrameCounter],a
+    call WaitVBlank
+    ld b, 7           ;totally 7 frames
+    xor a
+    ld [animationFrameCounter],a
 .frame_loop:
-  push bc
-  ld hl, Map
-  ld de, TILEMAP0
-  ld a, 3
-  add a, e
-  ld e, a
-  jr nc, .noCarryX
-  inc d
+    push bc
+    ld hl, Map
+    ld de, TILEMAP0
+    ld a, 3
+    add a, e
+    ld e, a
+    jr nc, .noCarryX
+    inc d
 .noCarryX:
 
-  ld b, 18
+    ld b, 18
 
 .rowLoop:
-  push bc
-  ld c, 10
+    push bc
+    ld c, 10
 
 .colLoop:
-  ld a, [hl+]         ; read Map
-  cp 0
-  jr z, .blank
-  cp 1
-  jr z, .block
+    ld a, [hl+]         ; read Map
+    cp 0
+    jr z, .blank
+    cp 1
+    jr z, .block
 
-  ld a,[animationFrameCounter]
-  ld b, a
-  ld a,AnimationStart       ; animation tile
-  
-  add b
-  jr .write
+    ld a,[animationFrameCounter]
+    ld b, a
+    ld a,AnimationStart       ; animation tile
+    
+    add b
+    jr .write
 .block:
-  ld a,TILE_BOX             ; box tile
-  jr .write
+    ld a,TILE_BOX             ; box tile
+    jr .write
 .blank:
-  ld a, TILE_SPACE             ; space tile
+    ld a, TILE_SPACE             ; space tile
 
 .write:
-  ld [de], a
-  inc de
-  dec c
-  jr nz, .colLoop
+    ld [de], a
+    inc de
+    dec c
+    jr nz, .colLoop
 
-  ; jump 22 to next row
-  ld a, b
-  cp 4
-  jr nz, .endRowSkip
-  call WaitVBlank
+    ; jump 22 to next row
+    ld a, b
+    cp 4
+    jr nz, .endRowSkip
+    call WaitVBlank
+
 .endRowSkip:
+    cp 9
+    jr nz, .endRowSkip2
+    call WaitVBlank
 
-  cp 9
-  jr nz, .endRowSkip2
-  call WaitVBlank
 .endRowSkip2:
 
-  
-  cp 14
-  jr nz, .endRowSkip3
-  call WaitVBlank
+    cp 14
+    jr nz, .endRowSkip3
+    call WaitVBlank
 
-  cp 17
-  jr nz, .endRowSkip3
-  call WaitVBlank
+    cp 17
+    jr nz, .endRowSkip3
+    call WaitVBlank
 .endRowSkip3:
-  ld a, e
-  add a, 22
-  ld e, a
-  jr nc, .noCarryRow
-  inc d
+    ld a, e
+    add a, 22
+    ld e, a
+    jr nc, .noCarryRow
+    inc d
 .noCarryRow:
 
-  pop bc
-  dec b
-  jr nz, .rowLoop
-  pop bc
-  call WaitVBlank
-  ld a,[animationFrameCounter]
+    pop bc
+    dec b
+    jr nz, .rowLoop
+    pop bc
+    call WaitVBlank
+    ld a,[animationFrameCounter]
 
-  inc a
-  ld [animationFrameCounter],a
-  dec b
-  jr nz, .frame_loop
-  ret
+    inc a
+    ld [animationFrameCounter],a
+    dec b
+    jr nz, .frame_loop
+    ret
 
 ; =========================================================
 ; Helpers
 ; =========================================================
 
 MultiplyBy10:
-  ; Input: a 
-  ; Output: de = a * 10
-  add a, a ; * 2
-  ld e, a ; e = a * 2
-  add a, a ; * 4
-  add a, a ; * 8
-  add a, e ; * 10
-  ld e, a
-  ld d, 0
-  ret
+    ; Input: a 
+    ; Output: de = a * 10
+    add a, a ; * 2
+    ld e, a ; e = a * 2
+    add a, a ; * 4
+    add a, a ; * 8
+    add a, e ; * 10
+    ld e, a
+    ld d, 0
+    ret
   
 NukeVRAM:
     ld hl, STARTOF(VRAM)
@@ -1757,32 +1791,42 @@ CopyFontTiles:
     jr nz, .copy
     ret
 
-ReadKeys:
-    ld a, %100000
-    ldh [rP1], a
-    ldh a, [rP1]
-    ldh a, [rP1]
-    cpl
-    and %00001111
-    swap a
-    ld b, a
-    ld a, %10000
-    ldh [rP1], a
-    ldh a, [rP1]
-    ldh a, [rP1]
-    cpl
-    and %00001111
-    or b
-    ld b, a
-    ld a, [wPrevKeys]
-    xor b
-    and b
-    ld [wCurKeys], a
-    ld a, b
-    ld [wPrevKeys], a
-    ld a, %110000
-    ldh [rP1], a
-    ret
+;---------------------------------------------------------------------
+readKeys:
+;---------------------------------------------------------------------
+; Output:
+; b : raw state:   pressing key triggers given action continuously
+;                  as long as it is pressed
+; c : rising edge: pressing key triggers given action only once,
+;                  key must be released and pressed again
+; Requires to define variables `previous` and `current`
+  ld    a,$20
+  ldh   [rP1],a   
+  ldh   a,[rP1] :: ldh a,[rP1]
+  cpl
+  and   $0F         ; lower nibble has down, up, left, right
+  swap	a           ; becomes high nibble
+  ld	b,a
+  ld    a,$10
+  ldh   [rP1],a
+  ldh   a,[rP1] :: ldh a,[rP1] :: ldh a,[rP1]
+  ldh   a,[rP1] :: ldh a,[rP1] :: ldh a,[rP1]
+  cpl
+  and   $0F         ; lower nibble has start, select, B, A
+  or    b
+  ld    b,a
+
+  ld    a,[previous]  ; load previous state
+  xor   b	      ; result will be 0 if it's the same as current read
+  and   b	      ; keep buttons that were pressed during this read only
+  ld    [current],a   ; store result in "current" variable and c register
+  ld    c,a
+  ld    a,b           ; current state will be previous in next read
+  ld    [previous],a
+
+  ld    a,$30         ; reset rP1
+  ldh   [rP1],a
+  ret
 
 WaitVBlank:
     ld a, [rLY]
@@ -1811,25 +1855,25 @@ CopyShadowOAMtoOAMTitle:
     ret
 
 CopyShadowOAMtoOAM:
-  ld hl, ShadowOAM
-  ld de, STARTOF(OAM)
-  ld b, 8
+    ld hl, ShadowOAM
+    ld de, STARTOF(OAM)
+    ld b, 8
 .loop:
-  ld a,[hl+]
-  ld [de],a
-  inc e
-  ld a,[hl+]
-  ld [de],a
-  inc e
-  ld a,[hl+]
-  ld [de],a
-  inc e
-  ld a,[hl+]
-  ld [de],a
-  inc e
-  dec b
-  jr nz, .loop
-  ret
+    ld a,[hl+]
+    ld [de],a
+    inc e
+    ld a,[hl+]
+    ld [de],a
+    inc e
+    ld a,[hl+]
+    ld [de],a
+    inc e
+    ld a,[hl+]
+    ld [de],a
+    inc e
+    dec b
+    jr nz, .loop
+    ret
 
 ; =========================================================
 ; DATA TABLES
@@ -1837,26 +1881,26 @@ CopyShadowOAMtoOAM:
 
 SECTION "Data", ROM0
 MapRowTable:
-  dw Map
-  dw Map+10
-  dw Map+20
-  dw Map+30
-  dw Map+40
-  dw Map+50
-  dw Map+60
-  dw Map+70
-  dw Map+80
-  dw Map+90
-  dw Map+100
-  dw Map+110
-  dw Map+120
-  dw Map+130
-  dw Map+140
-  dw Map+150
-  dw Map+160
-  dw Map+170
+    dw Map
+    dw Map+10
+    dw Map+20
+    dw Map+30
+    dw Map+40
+    dw Map+50
+    dw Map+60
+    dw Map+70
+    dw Map+80
+    dw Map+90
+    dw Map+100
+    dw Map+110
+    dw Map+120
+    dw Map+130
+    dw Map+140
+    dw Map+150
+    dw Map+160
+    dw Map+170
 PieceAddressTable:
-  dw Tetromino_I, Tetromino_J, Tetromino_L, Tetromino_O, Tetromino_S, Tetromino_Z, Tetromino_T
+    dw Tetromino_I, Tetromino_J, Tetromino_L, Tetromino_O, Tetromino_S, Tetromino_Z, Tetromino_T
 
 Tetromino_I: DB 1,0,0,0,-1,0,-2,0, 0,-1,0,0,0,1,0,2, 2,0,1,0,0,0,-1,0, 0,2,0,1,0,0,0,-1
 Tetromino_J: DB -1,-1,-1,0,0,0,1,0, -1,1,0,1,0,0,0,-1, 1,1,1,0,0,0,-1,0, 1,-1,0,-1,0,0,0,1
@@ -1919,7 +1963,10 @@ FontTiles:
 
     DB $3C,$66,$60,$6E,$66,$66,$3C,$00 ; 26 G
     DB $C6,$EE,$FE,$D6,$C6,$C6,$C6,$00 ; 27 M
-    DB $66,$66,$66,$66,$66,$3C,$18,$00 ; 28 V
+    DB $00,$66,$66,$66,$66,$3C,$18,$00 ; 28 V
+    DB $66,$66,$66,$66,$66,$3C,$18,$00 ; 29 BIG V
+    DB $00,$7C,$66,$7C,$66,$66,$7C,$00 ; 30 B
+
     AnimationFrames:
     ; frame 0
     DB %11111111, %11000011, %10000001, %10000001
@@ -1940,6 +1987,8 @@ FontTiles:
     ; frame 5
     DB %00000000, %00000000, %00000000, %00011000
     DB %00011000, %00000000, %00000000, %00000000
+    
+    DB 0,0,0,0,0,0,0,0
 FontTilesEnd:
 
 SECTION "TitleMap", ROM0
@@ -1951,7 +2000,7 @@ TitleTilemap:
     ds TITLE_TOTAL_COLS - (TITLE_TETRIS_COL + TITLE_TETRIS_LEN), TILE_SPACE
     ds TITLE_PRESS_ROW_GAP * TITLE_TOTAL_COLS, TILE_SPACE
     ds TITLE_PRESS_COL, TILE_SPACE
-    DB TILE_P,TILE_R,TILE_E,TILE_S,TILE_S,TILE_SPACE,TILE_A,TILE_SPACE,TILE_T,TILE_O,TILE_SPACE,TILE_S,TILE_T,TILE_A,TILE_R,TILE_T
+    DB TILE_P,TILE_R,TILE_E,TILE_S,TILE_S,TILE_SPACE,TILE_B,TILE_SPACE,TILE_T,TILE_O,TILE_SPACE,TILE_S,TILE_T,TILE_A,TILE_R,TILE_T
     ;press a to start
     ds TITLE_TOTAL_COLS - (TITLE_PRESS_COL + TITLE_PRESS_LEN + 1 + TITLE_ATO_LEN + TITLE_START_LEN), TILE_SPACE
     ds (TITLE_TOTAL_ROWS * TITLE_TOTAL_COLS) - (@ - TitleTilemap), TILE_SPACE
@@ -1964,7 +2013,7 @@ GameOverTilemap:
     ; offset to center "GAME OVER"
     ; Center offset = (20 - 9) / 2 = 5
     db TILE_SPACE, TILE_SPACE, TILE_SPACE, TILE_SPACE, TILE_SPACE  ; Fill first 5 spaces
-    DB TILE_G, TILE_A, TILE_M, TILE_E, TILE_SPACE, TILE_O, TILE_V, TILE_E, TILE_R  ; Display "GAME OVER"
+    DB TILE_G, TILE_A, TILE_M, TILE_E, TILE_SPACE, TILE_O, TILE_BIG_V, TILE_E, TILE_R  ; Display "GAME OVER"
     
     ; Fill remaining spaces
     ds TITLE_TOTAL_COLS - (5 + 10), TILE_SPACE  ; Calculate remaining spaces and fill
@@ -1973,7 +2022,7 @@ GameOverTilemap:
     
     ; calculate space for "Press Start"
     ds TITLE_PRESS_COL, TILE_SPACE
-    DB TILE_P, TILE_R, TILE_E, TILE_S, TILE_S, TILE_SPACE,TILE_A,TILE_SPACE, TILE_T,TILE_O,TILE_SPACE,TILE_R,TILE_E, TILE_S, TILE_T, TILE_A, TILE_R, TILE_T ; "Press Start"
+    DB TILE_P, TILE_R, TILE_E, TILE_S, TILE_S, TILE_SPACE,TILE_B,TILE_SPACE, TILE_T,TILE_O,TILE_SPACE,TILE_R,TILE_E, TILE_S, TILE_T, TILE_A, TILE_R, TILE_T ; "Press Start"
     ; press a to restart
     ds TITLE_TOTAL_COLS - (TITLE_PRESS_COL + 11), TILE_SPACE  ; Fill remaining spaces
 
@@ -1990,7 +2039,7 @@ MACRO FOG_ROW_UI
     ds UI_END_COL - GAME_TOTAL_WIDTH, TILE_FOG
     ds BG_WIDTH - UI_END_COL, TILE_SPACE
 ENDM
-REPT 2
+REPT 1
     FOG_ROW_UI
 ENDR
     ds GAME_LEFT_PAD, TILE_FOG
@@ -1998,7 +2047,7 @@ ENDR
     ds GAME_WIDTH, TILE_SPACE
     DB TILE_WALL
     DB TILE_FOG
-    DB 4,9,7,2,3
+    DB 4,9,7,2,3        ;score
     ds UI_END_COL - (GAME_TOTAL_WIDTH + 1 + SCORE_LEN), TILE_FOG
     ds BG_WIDTH - UI_END_COL, TILE_SPACE
     ds GAME_LEFT_PAD, TILE_FOG
@@ -2009,7 +2058,7 @@ ENDR
     DB TILE_DIGIT_0,TILE_DIGIT_0,TILE_DIGIT_0,TILE_DIGIT_0,TILE_DIGIT_0
     ds UI_END_COL - (GAME_TOTAL_WIDTH + 1 + 5), TILE_FOG
     ds BG_WIDTH - UI_END_COL, TILE_SPACE
-REPT 2
+REPT 1
     FOG_ROW_UI
 ENDR
     ds GAME_LEFT_PAD, TILE_FOG
@@ -2017,7 +2066,7 @@ ENDR
     ds GAME_WIDTH, TILE_SPACE
     DB TILE_WALL
     DB TILE_FOG
-    DB 10,8,11,3
+    DB 10,8,11,3      ;line
     ds UI_END_COL - (GAME_TOTAL_WIDTH + 1 + LINE_LEN), TILE_FOG
     ds BG_WIDTH - UI_END_COL, TILE_SPACE
     ds GAME_LEFT_PAD, TILE_FOG
@@ -2028,7 +2077,7 @@ ENDR
     DB TILE_DIGIT_0,TILE_DIGIT_0,TILE_DIGIT_0,TILE_DIGIT_0
     ds UI_END_COL - (GAME_TOTAL_WIDTH + 1 + 4), TILE_FOG
     ds BG_WIDTH - UI_END_COL, TILE_SPACE
-REPT 2
+REPT 1
     FOG_ROW_UI
 ENDR
     ds GAME_LEFT_PAD, TILE_FOG
@@ -2036,7 +2085,26 @@ ENDR
     ds GAME_WIDTH, TILE_SPACE
     DB TILE_WALL
     DB TILE_FOG
-    DB 11,3,12,6
+    DB TILE_L,TILE_E,TILE_V,TILE_E,TILE_L; level
+    ds UI_END_COL - (GAME_TOTAL_WIDTH + 1 + LEVEL_LEN), TILE_FOG
+    ds BG_WIDTH - UI_END_COL, TILE_SPACE
+    ds GAME_LEFT_PAD, TILE_FOG
+    DB TILE_WALL
+    ds GAME_WIDTH, TILE_SPACE
+    DB TILE_WALL
+    DB TILE_FOG
+    DB TILE_DIGIT_0,TILE_DIGIT_0,TILE_DIGIT_0,TILE_DIGIT_0,TILE_DIGIT_0
+    ds UI_END_COL - (GAME_TOTAL_WIDTH + 1 + 5), TILE_FOG
+    ds BG_WIDTH - UI_END_COL, TILE_SPACE
+REPT 1
+    FOG_ROW_UI
+ENDR
+    ds GAME_LEFT_PAD, TILE_FOG
+    DB TILE_WALL
+    ds GAME_WIDTH, TILE_SPACE
+    DB TILE_WALL
+    DB TILE_FOG
+    DB 11,3,12,6      ;next
     ds UI_END_COL - (GAME_TOTAL_WIDTH + 1 + NEXT_LEN), TILE_FOG
     ds BG_WIDTH - UI_END_COL, TILE_SPACE
 REPT 4
