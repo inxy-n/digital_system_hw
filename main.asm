@@ -42,7 +42,7 @@ DEF TITLE_ROWS_TOP_EMPTY    EQU 7
 DEF TITLE_TETRIS_COL        EQU 7
 DEF TITLE_TETRIS_LEN        EQU 6
 DEF TITLE_PRESS_ROW_GAP     EQU 1
-DEF TITLE_PRESS_COL         EQU 2
+DEF TITLE_PRESS_COL         EQU 4
 DEF TITLE_PRESS_LEN         EQU 5
 DEF TITLE_ATO_LEN           EQU 6
 DEF TITLE_START_LEN         EQU 5
@@ -73,7 +73,8 @@ DEF TILE_M           EQU 28
 DEF TILE_V           EQU 29
 DEF TILE_BIG_V       EQU 30
 DEF TILE_B           EQU 31
-DEF AnimationStart   EQU 32
+DEF TILE_Y           EQU 32
+DEF AnimationStart   EQU 33
 
 
 
@@ -124,6 +125,7 @@ GameOver:       ds 1
 TempX:          ds 1
 TempY:          ds 1
 skipDropTime:   ds 1
+softDropTime:   ds 1
 
 
 SECTION "Main", ROM0
@@ -168,7 +170,7 @@ EntryPoint:
 TitleLoop:
     call readKeys
     ld a, [current]
-    bit 1, a            ; Wait for key
+    bit KEY_START, a            ; Wait for key
     jr z, TitleLoop
 
     call StartGameInit
@@ -233,7 +235,7 @@ GameOverSequence:
 .waitRestart:
     call readKeys
     ld a, [current]
-    bit 1, a
+    bit KEY_START, a
     jr z, .waitRestart
     
     xor a
@@ -276,6 +278,7 @@ StartGameInit:
     ld [Score+1], a
     ld [Lines], a
     ld [Level], a
+    ld [softDropTime], a
     
     ld a, 1
     ld [next], a
@@ -292,7 +295,7 @@ StartGameInit:
     and %00000111
     cp 7
     jr nz, .getFirstNextPiece
-     xor a
+    xor a
 .getFirstNextPiece:
     ld [nextPiece], a
 
@@ -311,14 +314,14 @@ StartGameInit:
 
 Pause:
     ld a, [current]
-    bit 1,a
+    bit KEY_START,a
     ret z
   
   ;  pause
 .pauseLoop:
     call readKeys
     ld a, [current]
-    bit 1,a
+    bit KEY_START,a
     jr z, .pauseLoop
 
     ret
@@ -364,6 +367,7 @@ MoveDown:
     inc a
     ld [BaseY], a
     ret
+    
 
 UpdateScoreDisplay:
     ; Update the Score display on the screen
@@ -931,6 +935,7 @@ ClearLine:
     ld de, 300
     jr .updateScore
 .threeLines:
+    ld de, 500
     
 .updateScore:
     ld a, [hl]
@@ -955,7 +960,7 @@ ClearLine:
 HandleInput:
     ld a, [current]
     
-    bit KEY_UP, a ; UP
+    bit KEY_B, a ; B
     jr z, .checkRoutateLeft
     call Rotate
     jr .endInput
@@ -967,7 +972,7 @@ HandleInput:
     jr .endInput
 
 .HardDrop:
-    bit KEY_START, a ; START
+    bit KEY_UP, a ; UP
     jr z, .checkLeft
     call HardDropFunction
     jr .endInput
@@ -996,17 +1001,49 @@ HandleInput:
 .saveX:
     ld [BaseX], a
 .checkDown:
-    bit KEY_DOWN, a ; DOWN
-    jr z, .endInput
+    ld a, [previous]
+    bit KEY_DOWN, a
+    jr z, .keyNotPressedDown
+    
+    ; Pressed
     call CheckCollisionDown
     jr c, .endInput
-    ld a, [BaseY]
+    
+    ; Check whether the first time to be pressed
+    ld a, [current]
+    bit KEY_DOWN, a
+    jr z, .notFirstPress
+    
+    call MoveDown
+    xor a
+    ld [softDropTime], a
+    jr .resetAutoDrop
+    
+.notFirstPress:
+    ; keep pressing
+    ld a, [softDropTime]
     inc a
-    cp 18
-    jr c, .saveY
-    ld a, 18
-.saveY:
-    ld [BaseY], a
+    ld [softDropTime], a
+    
+    ; set the softDrop time
+    cp 5 ; set softDrop speed : 5 frames
+    jr nz, .endInput
+    
+    call MoveDown
+    
+    ; reset the timeCounter
+    xor a
+    ld [softDropTime], a
+    
+.resetAutoDrop:
+    xor a
+    ld [frameCounter], a
+    
+    jr .endInput
+
+.keyNotPressedDown:
+    xor a
+    ld [softDropTime], a
 .endInput:
     ret
 
@@ -1195,6 +1232,7 @@ CheckCollisionRotateRight:
     add e 
     ld d, a ; d : Xcoord
     ld a, [BaseY]
+    dec a
     ld e, a ; e : Ycoord
     ld a, [RotationState]
     add a, 8
@@ -1213,6 +1251,7 @@ CheckCollisionRotateLeft:
     add e
     ld d, a ; d : Xcoord
     ld a, [BaseY]
+    dec a
     ld e, a ; e : Ycoord
     ld a, [RotationState]
     sub 8
@@ -1928,16 +1967,16 @@ FontTiles:
     DB $00,$66,$3C,$18,$3C,$66,$66,$00 ; 12 X
     DB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ; 13 WALL
     ; Digits
-    DB $3C,$66,$6E,$76,$66,$66,$3C,$00
-    DB $18,$38,$18,$18,$18,$18,$3C,$00
-    DB $3C,$66,$06,$0C,$30,$60,$7E,$00
-    DB $3C,$66,$06,$1C,$06,$66,$3C,$00
-    DB $0C,$1C,$3C,$6C,$7E,$0C,$0C,$00
-    DB $7E,$60,$7C,$06,$06,$66,$3C,$00
-    DB $3C,$66,$60,$7C,$66,$66,$3C,$00
-    DB $7E,$06,$0C,$18,$30,$30,$30,$00
-    DB $3C,$66,$66,$3C,$66,$66,$3C,$00
-    DB $3C,$66,$66,$3E,$06,$66,$3C,$00
+    DB $3C,$66,$6E,$76,$66,$66,$3C,$00 ;0
+    DB $18,$38,$18,$18,$18,$18,$3C,$00 ;1
+    DB $3C,$66,$06,$0C,$30,$60,$7E,$00 ;2
+    DB $3C,$66,$06,$1C,$06,$66,$3C,$00 ;3
+    DB $0C,$1C,$3C,$6C,$7E,$0C,$0C,$00 ;4
+    DB $7E,$60,$7C,$06,$06,$66,$3C,$00 ;5
+    DB $3C,$66,$60,$7C,$66,$66,$3C,$00 ;6
+    DB $7E,$06,$0C,$18,$30,$30,$30,$00 ;7
+    DB $3C,$66,$66,$3C,$66,$66,$3C,$00 ;8
+    DB $3C,$66,$66,$3E,$06,$66,$3C,$00 ;9
     ; Box 
     DB %11111111
     DB %11000011
@@ -1966,6 +2005,7 @@ FontTiles:
     DB $00,$66,$66,$66,$66,$3C,$18,$00 ; 28 V
     DB $66,$66,$66,$66,$66,$3C,$18,$00 ; 29 BIG V
     DB $00,$7C,$66,$7C,$66,$66,$7C,$00 ; 30 B
+    DB $00,$66,$66,$3C,$18,$18,$18,$00 ; 31 Y
 
     AnimationFrames:
     ; frame 0
@@ -2000,8 +2040,8 @@ TitleTilemap:
     ds TITLE_TOTAL_COLS - (TITLE_TETRIS_COL + TITLE_TETRIS_LEN), TILE_SPACE
     ds TITLE_PRESS_ROW_GAP * TITLE_TOTAL_COLS, TILE_SPACE
     ds TITLE_PRESS_COL, TILE_SPACE
-    DB TILE_P,TILE_R,TILE_E,TILE_S,TILE_S,TILE_SPACE,TILE_B,TILE_SPACE,TILE_T,TILE_O,TILE_SPACE,TILE_S,TILE_T,TILE_A,TILE_R,TILE_T
-    ;press a to start
+    DB TILE_P,TILE_R,TILE_E,TILE_S,TILE_S,TILE_SPACE,TILE_SPACE,TILE_S,TILE_T,TILE_A,TILE_R,TILE_T
+    ;press B to start
     ds TITLE_TOTAL_COLS - (TITLE_PRESS_COL + TITLE_PRESS_LEN + 1 + TITLE_ATO_LEN + TITLE_START_LEN), TILE_SPACE
     ds (TITLE_TOTAL_ROWS * TITLE_TOTAL_COLS) - (@ - TitleTilemap), TILE_SPACE
 
@@ -2020,10 +2060,10 @@ GameOverTilemap:
 
     ds TITLE_PRESS_ROW_GAP * TITLE_TOTAL_COLS, TILE_SPACE  ; Empty
     
-    ; calculate space for "Press Start"
-    ds TITLE_PRESS_COL, TILE_SPACE
-    DB TILE_P, TILE_R, TILE_E, TILE_S, TILE_S, TILE_SPACE,TILE_B,TILE_SPACE, TILE_T,TILE_O,TILE_SPACE,TILE_R,TILE_E, TILE_S, TILE_T, TILE_A, TILE_R, TILE_T ; "Press Start"
-    ; press a to restart
+    ; calculate space for "Press B"
+    ;ds 1, TILE_SPACE
+    DB TILE_SPACE,TILE_P, TILE_R, TILE_E, TILE_S, TILE_S, TILE_SPACE,TILE_S,TILE_T,TILE_A,TILE_R,TILE_T,TILE_SPACE,TILE_T,TILE_O,TILE_SPACE,TILE_R,TILE_E,TILE_T,TILE_R,TILE_Y
+    ; press B to restart
     ds TITLE_TOTAL_COLS - (TITLE_PRESS_COL + 11), TILE_SPACE  ; Fill remaining spaces
 
     ds (TITLE_TOTAL_ROWS * TITLE_TOTAL_COLS) - (@ - GameOverTilemap), TILE_SPACE  ; Fill remaining area
@@ -2047,7 +2087,7 @@ ENDR
     ds GAME_WIDTH, TILE_SPACE
     DB TILE_WALL
     DB TILE_FOG
-    DB 4,9,7,2,3        ;score
+    DB TILE_S,TILE_C,TILE_O,TILE_R,TILE_E        ;score
     ds UI_END_COL - (GAME_TOTAL_WIDTH + 1 + SCORE_LEN), TILE_FOG
     ds BG_WIDTH - UI_END_COL, TILE_SPACE
     ds GAME_LEFT_PAD, TILE_FOG
@@ -2066,7 +2106,7 @@ ENDR
     ds GAME_WIDTH, TILE_SPACE
     DB TILE_WALL
     DB TILE_FOG
-    DB 10,8,11,3      ;line
+    DB TILE_L,TILE_I,TILE_N,TILE_E      ;line
     ds UI_END_COL - (GAME_TOTAL_WIDTH + 1 + LINE_LEN), TILE_FOG
     ds BG_WIDTH - UI_END_COL, TILE_SPACE
     ds GAME_LEFT_PAD, TILE_FOG
@@ -2104,7 +2144,7 @@ ENDR
     ds GAME_WIDTH, TILE_SPACE
     DB TILE_WALL
     DB TILE_FOG
-    DB 11,3,12,6      ;next
+    DB TILE_N,TILE_E,TILE_X,TILE_T      ;next
     ds UI_END_COL - (GAME_TOTAL_WIDTH + 1 + NEXT_LEN), TILE_FOG
     ds BG_WIDTH - UI_END_COL, TILE_SPACE
 REPT 4
